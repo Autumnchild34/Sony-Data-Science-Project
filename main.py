@@ -1,16 +1,117 @@
-# This is a sample Python script.
-
-# Press Shift+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
-
-
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
 
 
-# Press the green button in the gutter to run the script.
-if __name__ == '__main__':
-    print_hi('PyCharm')
+# Load the dataset
 
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+df = pd.read_csv('telecom_data1.csv')
+
+# Display basic info
+
+print(df.info())
+
+
+# Checking for missing values
+
+print(df.isnull().sum())
+
+# Check for Duplicates
+
+print(f"Duplicicated Rows: {df.duplicated().sum()}")
+
+# Display the first few rows to understand the data structure
+
+print(f"First Few rows of info: \n{df.head()}")
+
+# Describe the data to check for outliers ,data distributions
+
+print(f" Data Descriptions: \n{df.describe()}")
+
+
+# Visualize the distribution of numerical features
+
+df.hist(bins=30, figsize=(15, 10))
+plt.show()
+
+# Visualizing categorical features
+
+categorical_cols = df.select_dtypes(include=['object']).columns
+for col in categorical_cols:
+    plt.figure(figsize=(8,6))
+    sns.countplot(data=df, x=col)
+    plt.title(f'Distribution of {col}')
+    plt.show()
+
+
+# Filter the DataFrame for numeric columns only
+numeric_cols = df.select_dtypes(include=['number'])
+
+# Correlation Matrix to check the relationship between numerical features
+plt.figure(figsize=(12, 8))
+sns.heatmap(numeric_cols.corr(), annot=True, cmap='coolwarm', fmt='.2f', linewidths=0.5)
+plt.title('Correlation Matrix')
+plt.show()
+
+# Check feature importances using a simple tree-based model ( e.g, RandomForest )
+from sklearn.ensemble import RandomForestClassifier
+
+# Assuming 'Churn' is the Target variable and the rest are features
+X = df.drop('Churn', axis= 1 )
+y = df[ 'Churn']
+
+# Encode categorical variables if any
+X = pd.get_dummies(X)
+
+# Fit a Random forest model to check feature importances
+model =  RandomForestClassifier()
+model.fit(X, y)
+
+#Plot Feature importances
+feature_importances =  model.feature_importances_
+indices =  np.argsort(feature_importances)[::-1]
+plt.figure(figsize=(12,6))
+plt.barh(X.columns[indices],feature_importances[indices])
+plt.title('Feature Importances')
+plt.show()
+
+
+# /// 3)Data Processing and reprocessing  and splitting ///
+
+# Handle missing values (simple imputation for now )
+X.fillna(X.mean(), inplace=True )
+
+# Encoding categorical variables using one-hot encoding
+
+X =  pd.get_dummies(X)
+
+# Split the data into training  and test sets (80/20 split)
+from sklearn.model_selection import train_test_split
+
+X_train, X_test, y_train, y_test = train_test_split(X,y, test_size=0.2 , random_state= 42 )
+
+
+# Display the size of the datasets
+
+print(f'Training data shape : {X_train.shape} ')
+print(f'Test data shape: {X_test.shape} ')
+
+
+
+# 4 Model building 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
