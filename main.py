@@ -99,13 +99,54 @@ print(f'Test data shape: {X_test.shape} ')
 
 
 
-# 4 Model building 
+#  //////////////  4) Model building  //////////
+
+from sklearn.metrics import accuracy_score, f1_score, confusion_matrix
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.linear_model import LogisticRegression
+from sklearn.svm import SVC
+
+# Initialize classifiers
+models = {
+    'Random Forest': RandomForestClassifier(),
+    'Logistic Regression': LogisticRegression(),
+    'Support Vector Machine': SVC()
+}
+
+# Train each model and evaluate performance
+results = {}
+for model_name, model in models.items():
+    print(f"\nTraining {model_name}...")
+
+    # Train the model
+    model.fit(X_train, y_train)
+
+    # Predict on the test set
+    y_pred = model.predict(X_test)
+
+    # Evaluate the model
+    accuracy = accuracy_score(y_test, y_pred)
+    f1 = f1_score(y_test, y_pred)
+
+    # Save the results
+    results[model_name] = {'Accuracy': accuracy, 'F1 Score': f1}
+
+    print(f"{model_name} Accuracy: {accuracy:.4f}")
+    print(f"{model_name} F1 Score: {f1:.4f}")
+
+    # Display confusion matrix
+    cm = confusion_matrix(y_test, y_pred)
+    print(f"{model_name} Confusion Matrix:")
+    print(cm)
+
+# Display all results in a DataFrame
+results_df = pd.DataFrame(results).T
+print("\nModel Comparison:")
+print(results_df)
 
 
 
-
-
-
+# Complete
 
 
 
